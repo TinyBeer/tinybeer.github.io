@@ -173,59 +173,9 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="Hexo-简介"><a href="#Hexo-简介" class="headerlink" title="Hexo 简介"></a>Hexo 简介</h1><p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">Hexo</a> 是一款基于 Node.js 的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在 GitHub 和 Coding 上，是搭建博客的首选框架。</p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ol>
-<li>git &amp;&amp; github 账号</li>
-<li><a target="_blank" rel="noopener" href="https://nodejs.org/">Node.js</a></li>
-<li>hexo 框架</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用国内镜像进行加速</span></span><br><span class="line">npm install hexo-cli -g --registry=https://registry.npm.taobao.org</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试安装结果</span></span><br><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-
-<h1 id="Hexo-本地部署"><a href="#Hexo-本地部署" class="headerlink" title="Hexo 本地部署"></a>Hexo 本地部署</h1><ol>
-<li>创建一个空文件夹，存放 Hexo 博客文件。</li>
-<li>在文件夹目录下执行 <code>hexo init</code> 命令 <code>hexo</code> 会自行下载所需内容。</li>
-<li>使用 <code>hexo s</code> 启动博客 默认端口 4000</li>
-<li>使用 <code>hexo n &quot;我的第一篇博客文章.md&quot;</code>创建第一篇博客文章</li>
-<li>使用 <code>hexo g</code> 渲染博客 <code>hexo clean</code>可以清理这些生成结果</li>
-<li>使用 <code>hexo s</code> 启动本地博客服务，默认端口为 4000</li>
-<li>远程部署到 github</li>
-</ol>
-<ul>
-<li><p>创建一个 <code>[用户名].github.io</code> 仓库,后序可通过 <code>[用户名].github.io</code> 进行访问</p>
-</li>
-<li><p>在 blog 文件夹下安装 hexo-delpoyer-git 工具 忽略 warning</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">cnpm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>配置_config.yml 中 deploy 部分</p>
-</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="comment">## 部署方式</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">&#x27;git&#x27;</span></span><br><span class="line"><span class="comment">## 部署仓库</span></span><br><span class="line"><span class="attr">repo:</span> <span class="string">&#x27;https://github.com/TinyBeer/tinybeer.github.io.git&#x27;</span></span><br><span class="line"><span class="comment">## 部署分支</span></span><br><span class="line"><span class="attr">branch:</span> <span class="string">&#x27;main&#x27;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用<code>hexo d</code>完成远程部署</li>
-</ul>
-<h1 id="个性化"><a href="#个性化" class="headerlink" title="个性化"></a>个性化</h1><h2 id="主题修改"><a href="#主题修改" class="headerlink" title="主题修改"></a>主题修改</h2><p>以 yilia 主题为例子</p>
-<ul>
-<li><p>克隆</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 克隆到 theme 目录下</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/litten/hexo-theme-yilia.git ./themes/yilia</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>修改 <code>_config.yml</code> 中 theme 部分</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">yilia</span></span><br></pre></td></tr></table></figure></li>
-<li><p>解决模块缺失问题</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i hexo-generator-json-contennt --save</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="修改作者"><a href="#修改作者" class="headerlink" title="修改作者"></a>修改作者</h2><p>依旧是<code>_config.yml</code>文件</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">author:</span> <span class="string">Tiny</span> <span class="string">Beer</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="修改头像"><a href="#修改头像" class="headerlink" title="修改头像"></a>修改头像</h2><p>此处需要取 yili 主题内的<code>_config.yml</code>文件</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#你的头像url</span></span><br><span class="line"><span class="attr">avatar:</span> <span class="string">你的头像图片路径</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="图片管理"><a href="#图片管理" class="headerlink" title="图片管理"></a>图片管理</h2><p><code>_config.yml</code> 开启后会在本地保存图片</p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">post_asset_folder:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="文章截断"><a href="#文章截断" class="headerlink" title="文章截断"></a>文章截断</h2><p>使用<code>&lt;!--more--&gt;</code></p>
-<h2 id="增加标签类型"><a href="#增加标签类型" class="headerlink" title="增加标签类型"></a>增加标签类型</h2><p>yilia 的<code>_config.yml</code></p>
-<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="string">主页:</span> <span class="string">/</span></span><br><span class="line">  <span class="string">随笔:</span> <span class="string">/tags/随笔/</span></span><br><span class="line">  <span class="string">学习笔记:</span> <span class="string">/tags/学习笔记/</span></span><br></pre></td></tr></table></figure>
-
+        
+          <a class="article-more-a" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github-md/#more">more >></a>
+        
       
 
       
