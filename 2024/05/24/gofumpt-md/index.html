@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2024 | Hexo</title>
+  <title>gofumpt | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2024/index.html">
+  <meta name="description" content="gofumpt比gofmt更严格代码格式化策略。它是gofmt的一个子集。同时gofumpt向后兼容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gofumpt">
+<meta property="og:url" content="http://example.com/2024/05/24/gofumpt-md/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="gofumpt比gofmt更严格代码格式化策略。它是gofmt的一个子集。同时gofumpt向后兼容。">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-05-24T05:08:28.000Z">
+<meta property="article:modified_time" content="2024-05-24T05:11:40.101Z">
 <meta property="article:author" content="Tiny Beer">
+<meta property="article:tag" content="golang">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
@@ -148,36 +153,175 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-gofumpt-md" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/24/gofumpt-md/" class="archive-article-date">
-  	<time datetime="2024-05-24T05:08:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-24</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/24/gofumpt-md/">gofumpt</a>
+    <h1 class="article-title" itemprop="name">
+      gofumpt
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2024/05/24/gofumpt-md/" class="archive-article-date">
+  	<time datetime="2024-05-24T05:08:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a target="_blank" rel="noopener" href="https://github.com/mvdan/gofumpt"><code>gofumpt</code></a>比<code>gofmt</code>更严格代码格式化策略。它是<code>gofmt</code>的一个子集。同时<code>gofumpt</code>向后兼容。<span id="more"></span></p>
+<blockquote>
+<p>该工具是 Go 1.22 版本的 gofmt 的一个分支，需要 Go 1.21 或更高版本。<br>Vendor 和 testdata 目录将被跳过，除非作为显式参数给出。生成的 Go 文件也是如此。</p>
+</blockquote>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line">go install mvdan.cc/gofumpt@latest</span><br><span class="line"><span class="comment"># 执行</span></span><br><span class="line">gofumpt -l -w .</span><br></pre></td></tr></table></figure>
+
+<h2 id="vscode-配置"><a href="#vscode-配置" class="headerlink" title="vscode 配置"></a>vscode 配置</h2><p><code>gopls</code>使用<code>gofumpt</code></p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="attr">&quot;go.useLanguageServer&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line"><span class="attr">&quot;gopls&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">	<span class="attr">&quot;formatting.gofumpt&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Goland-配置"><a href="#Goland-配置" class="headerlink" title="Goland 配置"></a>Goland 配置</h2><ul>
+<li>打开 Settings (File &gt; Settings)</li>
+<li>打开 Tools 项</li>
+<li>找到 File Watchers 子项</li>
+<li>单击右侧的<code>+</code>来添加一个新的文件监视器</li>
+<li>选择自定义模板 在新窗口中继续操作</li>
+<li>File Types:选择<code>all .go files</code></li>
+<li>Scope: Project Files</li>
+<li>Program:选择 <code>gofumpt</code> 可执行文件</li>
+<li>Arguments:<code>-w $FilePath$</code></li>
+<li>Output path to refresh: <code>$FilePath$</code></li>
+<li>Working directory: <code>$ProjectFileDir$</code></li>
+<li>环境变量:<code>GOROOT=$GOROOT$;GOPATH=$GOPATH$;PATH=$GoBinDirs$</code></li>
+</ul>
+<p>为了避免不必要的运行，您应该禁用“高级”部分中的所有复选框。</p>
+<h1 id="新增的规则"><a href="#新增的规则" class="headerlink" title="新增的规则"></a>新增的规则</h1><ul>
+<li><p>在赋值操作后不换行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	foo :=</span><br><span class="line">		<span class="string">&quot;bar&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	foo := <span class="string">&quot;bar&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数体上下不换行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>函数应该分隔<code>)&#123;</code>，其中缩进有助于可读性</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(s <span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">	i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// With an empty line it&#x27;s slightly better, but still not great.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bar</span><span class="params">(s <span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">	i <span class="type">int</span>)</span></span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">(s <span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">	i <span class="type">int</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// With an empty line it&#x27;s slightly better, but still not great.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bar</span><span class="params">(s <span class="type">string</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">	i <span class="type">int</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;bar&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>代码块中单条语句或注释不空行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在简单的错误检查之前没有空行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">foo, err := processFoo()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">foo, err := processFoo()</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">	<span class="keyword">return</span> err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>复合文字应该一致地使用换行符</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// A newline before or after an element requires newlines for the opening and</span></span><br><span class="line"><span class="comment">// closing braces.</span></span><br><span class="line"><span class="keyword">var</span> ints = []<span class="type">int</span>&#123;<span class="number">1</span>, <span class="number">2</span>,</span><br><span class="line">	<span class="number">3</span>, <span class="number">4</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// A newline between consecutive elements requires a newline between all</span></span><br><span class="line"><span class="comment">// elements.</span></span><br><span class="line"><span class="keyword">var</span> matrix = [][]<span class="type">int</span>&#123;</span><br><span class="line">	&#123;<span class="number">1</span>&#125;,</span><br><span class="line">	&#123;<span class="number">2</span>&#125;, &#123;</span><br><span class="line">		<span class="number">3</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> ints = []<span class="type">int</span>&#123;</span><br><span class="line">	<span class="number">1</span>, <span class="number">2</span>,</span><br><span class="line">	<span class="number">3</span>, <span class="number">4</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> matrix = [][]<span class="type">int</span>&#123;</span><br><span class="line">	&#123;<span class="number">1</span>&#125;,</span><br><span class="line">	&#123;<span class="number">2</span>&#125;,</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="number">3</span>,</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>空字段列表应该使用一行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> V <span class="keyword">interface</span> &#123;</span><br><span class="line">&#125; = <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> V <span class="keyword">interface</span>&#123;&#125; = <span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>标准库的导入应该是顶部单独的一组</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;foo.com/bar&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;io&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;io&quot;</span></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;foo.com/bar&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>短的 case 判断应该在一行内处理</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">switch</span> c &#123;</span><br><span class="line"><span class="keyword">case</span> <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>,</span><br><span class="line">	<span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>:</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">switch</span> c &#123;</span><br><span class="line"><span class="keyword">case</span> <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>, <span class="string">&#x27;d&#x27;</span>:</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>多行顶级声明必须用空行分隔</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;multiline foo&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bar</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;multiline bar&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">foo</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;multiline foo&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">bar</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="built_in">println</span>(<span class="string">&quot;multiline bar&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单条变量声明不应该使用圆括号</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	foo = <span class="string">&quot;bar&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="string">&quot;bar&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>连续的顶级声明应该组合在一起</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> nicer = <span class="string">&quot;x&quot;</span></span><br><span class="line"><span class="keyword">var</span> with = <span class="string">&quot;y&quot;</span></span><br><span class="line"><span class="keyword">var</span> alignment = <span class="string">&quot;z&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	nicer     = <span class="string">&quot;x&quot;</span></span><br><span class="line">	with      = <span class="string">&quot;y&quot;</span></span><br><span class="line">	alignment = <span class="string">&quot;z&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>简单的 var 声明语句应该使用短赋值</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">var</span> s = <span class="string">&quot;somestring&quot;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line">s := <span class="string">&quot;somestring&quot;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>默认情况下启用<code>-s</code>代码简化标志</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> _ = [][]<span class="type">int</span>&#123;[]<span class="type">int</span>&#123;<span class="number">1</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> _ = [][]<span class="type">int</span>&#123;&#123;<span class="number">1</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>八进制整数字面值应该在使用 Go 1.13 及更高版本的模块上使用<code>0o</code>前缀</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> perm = <span class="number">0755</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> perm = <span class="number">0</span>o755</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不是 Go 指令的注释应该以空格开头</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">//go:noinline</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Foo is awesome.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Foo</span><span class="params">()</span></span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">//go:noinline</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Foo is awesome.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Foo</span><span class="params">()</span></span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>复合文字不应该有开头或结尾的空行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> _ = []<span class="type">string</span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;foo&quot;</span>,</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _ = <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="string">&quot;foo&quot;</span>: <span class="string">&quot;bar&quot;</span>,</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> _ = []<span class="type">string</span>&#123;</span><br><span class="line">	<span class="string">&quot;foo&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _ = <span class="keyword">map</span>[<span class="type">string</span>]<span class="type">string</span>&#123;</span><br><span class="line">	<span class="string">&quot;foo&quot;</span>: <span class="string">&quot;bar&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字段列表不应该有开头或结尾的空行</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> Person <span class="keyword">interface</span> &#123;</span><br><span class="line"></span><br><span class="line">	Name() <span class="type">string</span></span><br><span class="line"></span><br><span class="line">	Age() <span class="type">int</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ZeroFields <span class="keyword">struct</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// No fields are needed here.</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> Person <span class="keyword">interface</span> &#123;</span><br><span class="line">	Name() <span class="type">string</span></span><br><span class="line"></span><br><span class="line">	Age() <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ZeroFields <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// No fields are needed here.</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>相邻的相同类型的参数应分组在一起<br>这个规则需要使用<code>-extra</code>。该规则对简单参数使用效果不错，但是复杂参数使用是容易造成误读。按需使用即可。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Foo</span><span class="params">(bar <span class="type">string</span>, baz <span class="type">string</span>)</span></span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Foo</span><span class="params">(bar, baz <span class="type">string</span>)</span></span> &#123;&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,57 +333,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2024/05/24/gofumpt-md/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github-md/" class="archive-article-date">
-  	<time datetime="2024-05-22T08:42:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-22</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">博客搭建 Hexo &amp;&amp; Github</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github-md/">博客搭建 Hexo &amp;&amp; Github</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">玩虾</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -262,8 +455,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
