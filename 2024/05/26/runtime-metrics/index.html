@@ -6,16 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2024/5 | 🍺Let&#39;s Beer!!!</title>
+  <title>GO官方metrics包 | 🍺Let&#39;s Beer!!!</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-  <meta property="og:type" content="website">
-<meta property="og:title" content="🍺Let&#39;s Beer!!!">
-<meta property="og:url" content="http://example.com/archives/2024/05/index.html">
+  <meta name="description" content="metrics 包提供了一个稳定的接口来访问由 Go 运行时暴露的预定义好的指标数据。功能类似于 runtime.ReadMemStats 和  runtime&#x2F;debug.ReadGCStats，但是更加通用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GO官方metrics包">
+<meta property="og:url" content="http://example.com/2024/05/26/runtime-metrics/index.html">
 <meta property="og:site_name" content="🍺Let&#39;s Beer!!!">
+<meta property="og:description" content="metrics 包提供了一个稳定的接口来访问由 Go 运行时暴露的预定义好的指标数据。功能类似于 runtime.ReadMemStats 和  runtime&#x2F;debug.ReadGCStats，但是更加通用。">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-05-26T10:09:59.000Z">
+<meta property="article:modified_time" content="2024-05-26T10:12:37.506Z">
 <meta property="article:author" content="Tiny Beer">
+<meta property="article:tag" content="Golang">
+<meta property="article:tag" content="手册">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="🍺Let&#39;s Beer!!!" type="application/atom+xml">
@@ -196,24 +202,20 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-runtime-metrics" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
   
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2024" class="archive-year">2024</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
+    <h1 class="article-title" itemprop="name">
+      GO官方metrics包
+    </h1>
+  
+
+
+  
+  
 <a href="/2024/05/26/runtime-metrics/" class="archive-article-date">  
         <i class="icon-statistics"></i>
       <span class="post-meta-item-text"> 字数统计:</span>
@@ -224,19 +226,160 @@
         <time datetime="2024-05-26T10:09:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-26</time>
 </a>
 
-        </div>
-    	 
   
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2024/05/26/runtime-metrics/">GO官方metrics包</a>
-	
-    </h1>
   
+    
+<div style="margin-top:10px;">
+  <span class="post-time">
+    <span class="post-meta-item-icon">
+      <!-- fonts.scss -->
+      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
+      <!-- <i class="icon-statistics"></i>
+      <span class="post-meta-item-text"> 字数统计:</span>
+      <span class="post-count">4.1k字</span> -->
+    </span>
+  </span>
+
+  <span class="post-time">
+    <!-- &nbsp; | &nbsp; -->
+    <!-- <span class="post-meta-item-icon">
+      <i class="icon-book icon"></i>
+      <span class="post-meta-item-text"> 阅读时长≈</span>
+      <span class="post-count">24分</span>
+    </span> -->
+  </span>
+</div>
 
 
-        <div class="article-info info-on-right">
+  
+  </header>
+  
+  <div class="article-entry" itemprop="articleBody">
+    
+    <p>metrics 包提供了一个稳定的接口来访问由 Go 运行时暴露的预定义好的指标数据。功能类似于 <code>runtime.ReadMemStats</code> 和 <code> runtime/debug.ReadGCStats</code>，但是更加通用。<span id="more"></span></p>
+<h1 id="Interface"><a href="#Interface" class="headerlink" title="Interface"></a>Interface</h1><p>metrics 被定义为字符串，而不是一个结构体内容的字段，这更有利于拓展。完整的 metrics 列表可以查看由于 <code>All</code> 方法返回的 <code>Description</code> 列表。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	desc := metrics.All()</span><br><span class="line">	fmt.Println(<span class="string">&quot;total:&quot;</span>, <span class="built_in">len</span>(desc))</span><br><span class="line">	<span class="keyword">for</span> _, m := <span class="keyword">range</span> desc &#123;</span><br><span class="line">		fmt.Println(</span><br><span class="line">			<span class="string">&quot;\nName:&quot;</span>, m.Name,</span><br><span class="line">			<span class="string">&quot;\nKind:&quot;</span>, m.Kind, <span class="comment">// 数据类型</span></span><br><span class="line">			<span class="comment">// &quot;\nDesc:&quot;, m.Description,</span></span><br><span class="line">			<span class="comment">// &quot;\nCumulative:&quot;, m.Cumulative, // 是否累计</span></span><br><span class="line">		)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">total: 81</span><br><span class="line"></span><br><span class="line">Name: /cgo/go-to-c-calls:calls</span><br><span class="line"></span><br><span class="line">Name: /cpu/classes/gc/mark/assist:cpu-seconds</span><br><span class="line"></span><br><span class="line">Name: /cpu/classes/gc/mark/dedicated:cpu-seconds</span><br><span class="line"></span><br><span class="line">Name: /cpu/classes/gc/mark/idle:cpu-seconds</span><br><span class="line"></span><br><span class="line">Name: /cpu/classes/gc/pause:cpu-seconds</span><br><span class="line">...</span><br><span class="line"><span class="comment"># 总表放在后面了，按需取用。</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 Kind 表示这个指标所使用的数据类型，go 官方保证不会对这个类型进行修改。目前有以下几种类型:</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">    <span class="comment">// 没有类型 不要使用</span></span><br><span class="line">	<span class="comment">// KindBad indicates that the Value has no type and should not be used.</span></span><br><span class="line">	KindBad ValueKind = <span class="literal">iota</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// uint64</span></span><br><span class="line">	<span class="comment">// KindUint64 indicates that the type of the Value is a uint64.</span></span><br><span class="line">	KindUint64</span><br><span class="line"></span><br><span class="line">    <span class="comment">// float64</span></span><br><span class="line">	<span class="comment">// KindFloat64 indicates that the type of the Value is a float64.</span></span><br><span class="line">	KindFloat64</span><br><span class="line"></span><br><span class="line">    <span class="comment">// float64柱状图</span></span><br><span class="line">	<span class="comment">// KindFloat64Histogram indicates that the type of the Value is a *Float64Histogram.</span></span><br><span class="line">	KindFloat64Histogram</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h1 id="采样"><a href="#采样" class="headerlink" title="采样"></a>采样</h1><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">const</span> myMetric = <span class="string">&quot;/memory/classes/heap/free:bytes&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 需要哪些数据就添加哪些采样需求</span></span><br><span class="line">	sample := <span class="built_in">make</span>([]metrics.Sample, <span class="number">1</span>)</span><br><span class="line">	sample[<span class="number">0</span>].Name = myMetric</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 采样</span></span><br><span class="line">	metrics.Read(sample)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> sample[<span class="number">0</span>].Value.Kind() == metrics.KindBad &#123;</span><br><span class="line">		<span class="built_in">panic</span>(fmt.Sprintf(<span class="string">&quot;metric %q no longer supported&quot;</span>, myMetric))</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	freeBytes := sample[<span class="number">0</span>].Value.Uint64()</span><br><span class="line"></span><br><span class="line">	fmt.Printf(<span class="string">&quot;free but not released memory: %d\n&quot;</span>, freeBytes)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="指标信息"><a href="#指标信息" class="headerlink" title="指标信息"></a>指标信息</h1><h2 id="CGO"><a href="#CGO" class="headerlink" title="CGO"></a>CGO</h2><h3 id="GO-调用-C-次数"><a href="#GO-调用-C-次数" class="headerlink" title="GO 调用 C 次数"></a>GO 调用 C 次数</h3><p>Name: &#x2F;cgo&#x2F;go-to-c-calls:calls<br>Kind: 1<br>Desc: Count of calls made from Go to C by the current process.<br>Cumulative: true</p>
+<h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><h3 id="协助-GC-的-cpu-时间"><a href="#协助-GC-的-cpu-时间" class="headerlink" title="协助 GC 的 cpu 时间"></a>协助 GC 的 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;gc&#x2F;mark&#x2F;assist:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time goroutines spent performing GC tasks to assist the GC and prevent it from falling behind the application. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="专注-GC-的-cpu-时间"><a href="#专注-GC-的-cpu-时间" class="headerlink" title="专注 GC 的 cpu 时间"></a>专注 GC 的 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;gc&#x2F;mark&#x2F;dedicated:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent performing GC tasks on processors (as defined by GOMAXPROCS) dedicated to those tasks. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="空闲-CPU-参与-GC-的时间"><a href="#空闲-CPU-参与-GC-的时间" class="headerlink" title="空闲 CPU 参与 GC 的时间"></a>空闲 CPU 参与 GC 的时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;gc&#x2F;mark&#x2F;idle:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent performing GC tasks on spare CPU resources that the Go scheduler could not otherwise find a use for. This should be subtracted from the total GC CPU time to obtain a measure of compulsory GC CPU time. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="任务暂停时-GC-所用-cpu-时间"><a href="#任务暂停时-GC-所用-cpu-时间" class="headerlink" title="任务暂停时 GC 所用 cpu 时间"></a>任务暂停时 GC 所用 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;gc&#x2F;pause:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent with the application paused by the GC. Even if only one thread is running during the pause, this is computed as GOMAXPROCS times the pause latency because nothing else can be executing. This is the exact sum of samples in &#x2F;sched&#x2F;pauses&#x2F;total&#x2F;gc:seconds if each sample is multiplied by GOMAXPROCS at the time it is taken. This metric is an overestimate,<br>and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="GC-总时长"><a href="#GC-总时长" class="headerlink" title="GC 总时长"></a>GC 总时长</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;gc&#x2F;total:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent performing GC tasks. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics. Sum of all metrics in &#x2F;cpu&#x2F;classes&#x2F;gc.<br>Cumulative: true</p>
+<h3 id="CPU-空闲时间"><a href="#CPU-空闲时间" class="headerlink" title="CPU 空闲时间"></a>CPU 空闲时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;idle:cpu-seconds<br>Kind: 2<br>Desc: Estimated total available CPU time not spent executing any Go or Go runtime code. In other words, the part of &#x2F;cpu&#x2F;classes&#x2F;total:cpu-seconds that was unused. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="协助紧急内存释放-cpu-时间"><a href="#协助紧急内存释放-cpu-时间" class="headerlink" title="协助紧急内存释放 cpu 时间"></a>协助紧急内存释放 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;scavenge&#x2F;assist:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent returning unused memory to the underlying platform in response eagerly in response to memory<br>pressure. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="后台任务期间释放内存-cpu-时间"><a href="#后台任务期间释放内存-cpu-时间" class="headerlink" title="后台任务期间释放内存 cpu 时间"></a>后台任务期间释放内存 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;scavenge&#x2F;background:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent performing background tasks to return unused memory to the underlying platform. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h3 id="释放内存总时间"><a href="#释放内存总时间" class="headerlink" title="释放内存总时间"></a>释放内存总时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;scavenge&#x2F;total:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent performing tasks that return unused memory to the underlying platform. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics. Sum of all metrics in &#x2F;cpu&#x2F;classes&#x2F;scavenge.<br>Cumulative: true</p>
+<h3 id="总-cpu-可用时间"><a href="#总-cpu-可用时间" class="headerlink" title="总 cpu 可用时间"></a>总 cpu 可用时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;total:cpu-seconds<br>Kind: 2<br>Desc: Estimated total available CPU time for user Go code or the Go runtime, as defined by GOMAXPROCS. In other words, GOMAXPROCS<br>integrated over the wall-clock duration this process has been executing for. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics. Sum of all metrics in &#x2F;cpu&#x2F;classes.<br>Cumulative: true</p>
+<h3 id="总用户-cpu-时间"><a href="#总用户-cpu-时间" class="headerlink" title="总用户 cpu 时间"></a>总用户 cpu 时间</h3><p>Name: &#x2F;cpu&#x2F;classes&#x2F;user:cpu-seconds<br>Kind: 2<br>Desc: Estimated total CPU time spent running user Go code. This may also include some small amount of time spent in the Go runtime. This metric is an overestimate, and not directly comparable to system CPU time measurements. Compare only with other &#x2F;cpu&#x2F;classes metrics.<br>Cumulative: true</p>
+<h2 id="GC-循环"><a href="#GC-循环" class="headerlink" title="GC 循环"></a>GC 循环</h2><h3 id="自动-GC-次数"><a href="#自动-GC-次数" class="headerlink" title="自动 GC 次数"></a>自动 GC 次数</h3><p>Name: &#x2F;gc&#x2F;cycles&#x2F;automatic:gc-cycles<br>Kind: 1<br>Desc: Count of completed GC cycles generated by the Go runtime.<br>Cumulative: true</p>
+<h3 id="主动-GC-次数"><a href="#主动-GC-次数" class="headerlink" title="主动 GC 次数"></a>主动 GC 次数</h3><p>Name: &#x2F;gc&#x2F;cycles&#x2F;forced:gc-cycles<br>Kind: 1<br>Desc: Count of completed GC cycles forced by the application.<br>Cumulative: true</p>
+<h3 id="总-GC-次数"><a href="#总-GC-次数" class="headerlink" title="总 GC 次数"></a>总 GC 次数</h3><p>Name: &#x2F;gc&#x2F;cycles&#x2F;total:gc-cycles<br>Kind: 1<br>Desc: Count of all completed GC cycles.<br>Cumulative: true</p>
+<h3 id="触发-GC-的堆大小相对值"><a href="#触发-GC-的堆大小相对值" class="headerlink" title="触发 GC 的堆大小相对值"></a>触发 GC 的堆大小相对值</h3><p>Name: &#x2F;gc&#x2F;gogc:percent<br>Kind: 1<br>Desc: Heap size target percentage configured by the user, otherwise 100. This value is set by the GOGC environment variable, and the runtime&#x2F;debug.SetGCPercent function.<br>Cumulative: false</p>
+<h3 id="内存大小限制"><a href="#内存大小限制" class="headerlink" title="内存大小限制"></a>内存大小限制</h3><p>Name: &#x2F;gc&#x2F;gomemlimit:bytes<br>Kind: 1<br>Desc: Go runtime memory limit configured by the user, otherwise math.MaxInt64. This value is set by the GOMEMLIMIT environment variable, and the runtime&#x2F;debug.SetMemoryLimit function.<br>Cumulative: false</p>
+<h3 id="堆内存分配柱状图"><a href="#堆内存分配柱状图" class="headerlink" title="堆内存分配柱状图"></a>堆内存分配柱状图</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;allocs-by-size:bytes<br>Kind: 3<br>Desc: Distribution of heap allocations by approximate size. Bucket counts increase monotonically. Note that this does not include<br>tiny objects as defined by &#x2F;gc&#x2F;heap&#x2F;tiny&#x2F;allocs:objects, only tiny blocks.<br>Cumulative: true</p>
+<h3 id="累计堆内存分配"><a href="#累计堆内存分配" class="headerlink" title="累计堆内存分配"></a>累计堆内存分配</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;allocs:bytes<br>Kind: 1<br>Desc: Cumulative sum of memory allocated to the heap by the application.<br>Cumulative: true</p>
+<h3 id="累计触发堆内存分配次数"><a href="#累计触发堆内存分配次数" class="headerlink" title="累计触发堆内存分配次数"></a>累计触发堆内存分配次数</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;allocs:objects<br>Kind: 1<br>Desc: Cumulative count of heap allocations triggered by the application. Note that this does not include tiny objects as defined by &#x2F;gc&#x2F;heap&#x2F;tiny&#x2F;allocs:objects, only tiny blocks.<br>Cumulative: true</p>
+<h3 id="堆内存释放柱状图"><a href="#堆内存释放柱状图" class="headerlink" title="堆内存释放柱状图"></a>堆内存释放柱状图</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;frees-by-size:bytes<br>Kind: 3<br>Desc: Distribution of freed heap allocations by approximate size. Bucket counts increase monotonically. Note that this does not include tiny objects as defined by &#x2F;gc&#x2F;heap&#x2F;tiny&#x2F;allocs:objects, only tiny blocks.<br>Cumulative: true</p>
+<h3 id="总堆内存释放"><a href="#总堆内存释放" class="headerlink" title="总堆内存释放"></a>总堆内存释放</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;frees:bytes<br>Kind: 1<br>Desc: Cumulative sum of heap memory freed by the garbage collector.<br>Cumulative: true</p>
+<h3 id="堆内存释放次数"><a href="#堆内存释放次数" class="headerlink" title="堆内存释放次数"></a>堆内存释放次数</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;frees:objects<br>Kind: 1<br>Desc: Cumulative count of heap allocations whose storage was freed by the garbage collector. Note that this does not include tiny<br>objects as defined by &#x2F;gc&#x2F;heap&#x2F;tiny&#x2F;allocs:objects, only tiny blocks.<br>Cumulative: true</p>
+<h3 id="GC-循环后目标堆内存"><a href="#GC-循环后目标堆内存" class="headerlink" title="GC 循环后目标堆内存"></a>GC 循环后目标堆内存</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;goal:bytes<br>Kind: 1<br>Desc: Heap size target for the end of the GC cycle.<br>Cumulative: false</p>
+<h3 id="活跃堆内存"><a href="#活跃堆内存" class="headerlink" title="活跃堆内存"></a>活跃堆内存</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;live:bytes<br>Kind: 1<br>Desc: Heap memory occupied by live objects that were marked by the previous GC.<br>Cumulative: false</p>
+<h3 id="总堆对象数"><a href="#总堆对象数" class="headerlink" title="总堆对象数"></a>总堆对象数</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;objects:objects<br>Kind: 1<br>Desc: Number of objects, live or unswept, occupying heap memory.<br>Cumulative: false</p>
+<h3 id="堆上小对象数"><a href="#堆上小对象数" class="headerlink" title="堆上小对象数"></a>堆上小对象数</h3><p>Name: &#x2F;gc&#x2F;heap&#x2F;tiny&#x2F;allocs:objects<br>Kind: 1<br>Desc: Count of small allocations that are packed together into blocks. These allocations are counted separately from other allocations because each individual allocation is not tracked by the runtime, only their block. Each block is already accounted for in allocs-by-size and frees-by-size.<br>Cumulative: true</p>
+<h3 id="上次内存限制触发时间"><a href="#上次内存限制触发时间" class="headerlink" title="上次内存限制触发时间"></a>上次内存限制触发时间</h3><p>Name: &#x2F;gc&#x2F;limiter&#x2F;last-enabled:gc-cycle<br>Kind: 1<br>Desc: GC cycle the last time the GC CPU limiter was enabled. This metric is useful for diagnosing the root cause of an out-of-memory error, because the limiter trades memory for CPU time when the GC’s CPU time gets too high. This is most likely to occur with use of SetMemoryLimit. The first GC cycle is cycle 1, so a value of 0 indicates that it was never enabled.<br>Cumulative: false</p>
+<h3 id="GC-暂停-启用"><a href="#GC-暂停-启用" class="headerlink" title="GC 暂停 启用"></a>GC 暂停 启用</h3><p>Name: &#x2F;gc&#x2F;pauses:seconds<br>Kind: 3<br>Desc: Deprecated. Prefer the identical &#x2F;sched&#x2F;pauses&#x2F;total&#x2F;gc:seconds.<br>Cumulative: true</p>
+<h3 id="GC-可扫描总变量空间"><a href="#GC-可扫描总变量空间" class="headerlink" title="GC 可扫描总变量空间"></a>GC 可扫描总变量空间</h3><p>Name: &#x2F;gc&#x2F;scan&#x2F;globals:bytes<br>Kind: 1<br>Desc: The total amount of global variable space that is scannable.<br>Cumulative: false</p>
+<h3 id="GC-可扫描所有堆空间"><a href="#GC-可扫描所有堆空间" class="headerlink" title="GC 可扫描所有堆空间"></a>GC 可扫描所有堆空间</h3><p>Name: &#x2F;gc&#x2F;scan&#x2F;heap:bytes<br>Kind: 1<br>Desc: The total amount of heap space that is scannable.<br>Cumulative: false</p>
+<h3 id="GC-扫描栈大小"><a href="#GC-扫描栈大小" class="headerlink" title="GC 扫描栈大小"></a>GC 扫描栈大小</h3><p>Name: &#x2F;gc&#x2F;scan&#x2F;stack:bytes<br>Kind: 1<br>Desc: The number of bytes of stack that were scanned last GC cycle.<br>Cumulative: false</p>
+<h3 id="GC-扫描总空间"><a href="#GC-扫描总空间" class="headerlink" title="GC 扫描总空间"></a>GC 扫描总空间</h3><p>Name: &#x2F;gc&#x2F;scan&#x2F;total:bytes<br>Kind: 1<br>Desc: The total amount space that is scannable. Sum of all metrics in &#x2F;gc&#x2F;scan.<br>Cumulative: false</p>
+<h3 id="新协程栈大小"><a href="#新协程栈大小" class="headerlink" title="新协程栈大小"></a>新协程栈大小</h3><p>Name: &#x2F;gc&#x2F;stack&#x2F;starting-size:bytes<br>Kind: 1<br>Desc: The stack size of new goroutines.<br>Cumulative: false</p>
+<h2 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h2><h3 id="满足释放要求的内存"><a href="#满足释放要求的内存" class="headerlink" title="满足释放要求的内存"></a>满足释放要求的内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;heap&#x2F;free:bytes<br>Kind: 1<br>Desc: Memory that is completely free and eligible to be returned to the underlying system, but has not been. This metric is the runtime’s estimate of free address space that is backed by physical memory.<br>Cumulative: false</p>
+<h3 id="堆对象内存"><a href="#堆对象内存" class="headerlink" title="堆对象内存"></a>堆对象内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;heap&#x2F;objects:bytes<br>Kind: 1<br>Desc: Memory occupied by live objects and dead objects that have not yet been marked free by the garbage collector.<br>Cumulative: false</p>
+<h3 id="已释放的内存"><a href="#已释放的内存" class="headerlink" title="已释放的内存"></a>已释放的内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;heap&#x2F;released:bytes<br>Kind: 1<br>Desc: Memory that is completely free and has been returned to the underlying system. This metric is the runtime’s estimate of free address space that is still mapped into the process, but is not backed by physical memory.<br>Cumulative: false</p>
+<h3 id="栈内存大小"><a href="#栈内存大小" class="headerlink" title="栈内存大小"></a>栈内存大小</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;heap&#x2F;stacks:bytes<br>Kind: 1<br>Desc: Memory allocated from the heap that is reserved for stack space, whether or not it is currently in-use. Currently, this represents all stack memory for goroutines. It also includes all OS thread stacks in non-cgo programs. Note that stacks may be allocated differently in the future, and this may change.<br>Cumulative: false</p>
+<h3 id="未使用的堆内存"><a href="#未使用的堆内存" class="headerlink" title="未使用的堆内存"></a>未使用的堆内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;heap&#x2F;unused:bytes<br>Kind: 1<br>Desc: Memory that is reserved for heap objects but is not currently used to hold heap objects.<br>Cumulative: false</p>
+<h3 id="mcahe-中未使用内存"><a href="#mcahe-中未使用内存" class="headerlink" title="mcahe 中未使用内存"></a>mcahe 中未使用内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;metadata&#x2F;mcache&#x2F;free:bytes<br>Kind: 1<br>Desc: Memory that is reserved for runtime mcache structures, but not in-use.<br>Cumulative: false</p>
+<h3 id="mcache-中在使用的内存"><a href="#mcache-中在使用的内存" class="headerlink" title="mcache 中在使用的内存"></a>mcache 中在使用的内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;metadata&#x2F;mcache&#x2F;inuse:bytes<br>Kind: 1<br>Desc: Memory that is occupied by runtime mcache structures that are currently being used.<br>Cumulative: false</p>
+<h3 id="mspan-中未使用的内存"><a href="#mspan-中未使用的内存" class="headerlink" title="mspan 中未使用的内存"></a>mspan 中未使用的内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;metadata&#x2F;mspan&#x2F;free:bytes<br>Kind: 1<br>Desc: Memory that is reserved for runtime mspan structures, but not in-use.<br>Cumulative: false</p>
+<h3 id="mspan-中在使用的内存"><a href="#mspan-中在使用的内存" class="headerlink" title="mspan 中在使用的内存"></a>mspan 中在使用的内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;metadata&#x2F;mspan&#x2F;inuse:bytes<br>Kind: 1<br>Desc: Memory that is occupied by runtime mspan structures that are currently being used.<br>Cumulative: false</p>
+<h3 id="运行时保留或者-metadata-占用内存"><a href="#运行时保留或者-metadata-占用内存" class="headerlink" title="运行时保留或者 metadata 占用内存"></a>运行时保留或者 metadata 占用内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;metadata&#x2F;other:bytes<br>Kind: 1<br>Desc: Memory that is reserved for or used to hold runtime metadata.<br>Cumulative: false</p>
+<h3 id="系统栈内存-cgo"><a href="#系统栈内存-cgo" class="headerlink" title="系统栈内存 cgo"></a>系统栈内存 cgo</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;os-stacks:bytes<br>Kind: 1<br>Desc: Stack memory allocated by the underlying operating system. In non-cgo programs this metric is currently zero. This may change in the future.In cgo programs this metric includes OS thread stacks allocated directly from the OS. Currently, this only accounts for one stack in c-shared and c-archive build modes, and other sources of stacks from the OS are not measured. This too may change in the future.<br>Cumulative: false</p>
+<h3 id="其他内存占用"><a href="#其他内存占用" class="headerlink" title="其他内存占用"></a>其他内存占用</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;other:bytes<br>Kind: 1<br>Desc: Memory used by execution trace buffers, structures for debugging the runtime, finalizer and profiler specials, and more.<br>Cumulative: false</p>
+<h3 id="profile-内存占用"><a href="#profile-内存占用" class="headerlink" title="profile 内存占用"></a>profile 内存占用</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;profiling&#x2F;buckets:bytes<br>Kind: 1<br>Desc: Memory that is used by the stack trace hash map used for profiling.<br>Cumulative: false</p>
+<h3 id="除-cgo-外产生的所有内存"><a href="#除-cgo-外产生的所有内存" class="headerlink" title="除 cgo 外产生的所有内存"></a>除 cgo 外产生的所有内存</h3><p>Name: &#x2F;memory&#x2F;classes&#x2F;total:bytes<br>Kind: 1<br>Desc: All memory mapped by the Go runtime into the current process as read-write. Note that this does not include memory mapped by code called via cgo or via the syscall package. Sum of all metrics in &#x2F;memory&#x2F;classes.<br>Cumulative: false</p>
+<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><h3 id="最大线程数"><a href="#最大线程数" class="headerlink" title="最大线程数"></a>最大线程数</h3><p>Name: &#x2F;sched&#x2F;gomaxprocs:threads<br>Kind: 1<br>Desc: The current runtime.GOMAXPROCS setting, or the number of operating system threads that can execute user-level Go code simultaneously.<br>Cumulative: false</p>
+<h3 id="协程数"><a href="#协程数" class="headerlink" title="协程数"></a>协程数</h3><p>Name: &#x2F;sched&#x2F;goroutines:goroutines<br>Kind: 1<br>Desc: Count of live goroutines.<br>Cumulative: false</p>
+<h3 id="调度延迟柱状图"><a href="#调度延迟柱状图" class="headerlink" title="调度延迟柱状图"></a>调度延迟柱状图</h3><p>Name: &#x2F;sched&#x2F;latencies:seconds<br>Kind: 3<br>Desc: Distribution of the time goroutines have spent in the scheduler in a runnable state before actually running. Bucket counts increase monotonically.<br>Cumulative: true</p>
+<h3 id="GC-暂停时间柱状图"><a href="#GC-暂停时间柱状图" class="headerlink" title="GC 暂停时间柱状图"></a>GC 暂停时间柱状图</h3><p>Name: &#x2F;sched&#x2F;pauses&#x2F;stopping&#x2F;gc:seconds<br>Kind: 3<br>Desc: Distribution of individual GC-related stop-the-world stopping latencies. This is the time it takes from deciding to stop the world until all Ps are stopped. This is a subset of the total GC-related stop-the-world time (&#x2F;sched&#x2F;pauses&#x2F;total&#x2F;gc:seconds). During this time, some threads may be executing. Bucket counts increase monotonically.<br>Cumulative: true</p>
+<h3 id="其他等待时间柱状图"><a href="#其他等待时间柱状图" class="headerlink" title="其他等待时间柱状图"></a>其他等待时间柱状图</h3><p>Name: &#x2F;sched&#x2F;pauses&#x2F;stopping&#x2F;other:seconds<br>Kind: 3<br>Desc: Distribution of individual non-GC-related stop-the-world stopping latencies. This is the time it takes from deciding to stop the world until all Ps are stopped. This is a subset of the total non-GC-related stop-the-world time (&#x2F;sched&#x2F;pauses&#x2F;total&#x2F;other:seconds). During this time, some threads may be executing. Bucket counts increase monotonically.<br>Cumulative: true</p>
+<h3 id="GC-暂停决策到重启的时间"><a href="#GC-暂停决策到重启的时间" class="headerlink" title="GC 暂停决策到重启的时间"></a>GC 暂停决策到重启的时间</h3><p>Name: &#x2F;sched&#x2F;pauses&#x2F;total&#x2F;gc:seconds<br>Kind: 3<br>Desc: Distribution of individual GC-related stop-the-world pause latencies. This is the time from deciding to stop the world until the world is started again. Some of this time is spent getting all threads to stop (this is measured directly in &#x2F;sched&#x2F;pauses&#x2F;stopping&#x2F;gc:seconds), during which some threads may still be running. Bucket counts increase monotonically.<br>Cumulative: true</p>
+<h3 id="其他等待时间"><a href="#其他等待时间" class="headerlink" title="其他等待时间"></a>其他等待时间</h3><p>Name: &#x2F;sched&#x2F;pauses&#x2F;total&#x2F;other:seconds<br>Kind: 3<br>Desc: Distribution of individual non-GC-related stop-the-world pause latencies. This is the time from deciding to stop the world until the world is started again. Some of this time is spent getting all threads to stop (measured directly in &#x2F;sched&#x2F;pauses&#x2F;stopping&#x2F;other:seconds). Bucket counts increase monotonically.<br>Cumulative: true</p>
+<h2 id="锁竞争"><a href="#锁竞争" class="headerlink" title="锁竞争"></a>锁竞争</h2><h3 id="取锁累计等待时间"><a href="#取锁累计等待时间" class="headerlink" title="取锁累计等待时间"></a>取锁累计等待时间</h3><p>Name: &#x2F;sync&#x2F;mutex&#x2F;wait&#x2F;total:seconds<br>Kind: 2<br>Desc: Approximate cumulative time goroutines have spent blocked on a sync.Mutex, sync.RWMutex, or runtime-internal lock. This metric is useful for identifying global changes in lock contention. Collect a mutex or block profile using the runtime&#x2F;pprof package for more detailed contention data.<br>Cumulative: true</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;execerrdot:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the os&#x2F;exec package due to a non-default GODEBUG&#x3D;execerrdot&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;gocachehash:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the cmd&#x2F;go package due to a non-default GODEBUG&#x3D;gocachehash&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;gocachetest:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the cmd&#x2F;go package due to a non-default GODEBUG&#x3D;gocachetest&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;gocacheverify:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the cmd&#x2F;go package due to a non-default GODEBUG&#x3D;gocacheverify&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;gotypesalias:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the go&#x2F;types package due to a non-default GODEBUG&#x3D;gotypesalias&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;http2client:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the net&#x2F;http package due to a non-default GODEBUG&#x3D;http2client&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;http2server:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the net&#x2F;http package due to a non-default GODEBUG&#x3D;http2server&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;httplaxcontentlength:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the net&#x2F;http package due to a non-default GODEBUG&#x3D;httplaxcontentlength&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;httpmuxgo121:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the net&#x2F;http package due to a non-default GODEBUG&#x3D;httpmuxgo121&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;installgoroot:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the go&#x2F;build package due to a non-default GODEBUG&#x3D;installgoroot&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;jstmpllitinterp:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the html&#x2F;template package due to a non-default GODEBUG&#x3D;jstmpllitinterp&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;multipartmaxheaders:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the mime&#x2F;multipart package due to a non-default GODEBUG&#x3D;multipartmaxheaders&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;multipartmaxparts:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the mime&#x2F;multipart package due to a non-default GODEBUG&#x3D;multipartmaxparts&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;multipathtcp:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the net package due to a non-default GODEBUG&#x3D;multipathtcp&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;panicnil:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the runtime package due to a non-default GODEBUG&#x3D;panicnil&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;randautoseed:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the math&#x2F;rand package due to a non-default GODEBUG&#x3D;randautoseed&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;tarinsecurepath:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the archive&#x2F;tar package due to a non-default GODEBUG&#x3D;tarinsecurepath&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;tls10server:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;tls package due to a non-default GODEBUG&#x3D;tls10server&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;tlsmaxrsasize:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;tls package due to a non-default GODEBUG&#x3D;tlsmaxrsasize&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;tlsrsakex:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;tls package due to a non-default GODEBUG&#x3D;tlsrsakex&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;tlsunsafeekm:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;tls package due to a non-default GODEBUG&#x3D;tlsunsafeekm&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;x509sha1:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;x509 package due to a non-default GODEBUG&#x3D;x509sha1&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;x509usefallbackroots:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;x509 package due to a non-default GODEBUG&#x3D;x509usefallbackroots&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;x509usepolicies:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the crypto&#x2F;x509 package due to a non-default GODEBUG&#x3D;x509usepolicies&#x3D;… setting.<br>Cumulative: true</p>
+<p>Name: &#x2F;godebug&#x2F;non-default-behavior&#x2F;zipinsecurepath:events<br>Kind: 1<br>Desc: The number of non-default behaviors executed by the archive&#x2F;zip package due to a non-default GODEBUG&#x3D;zipinsecurepath&#x3D;… setting.<br>Cumulative: true</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://pkg.go.dev/runtime/metrics">metrics 文档</a></p>
+
+    
+
+    
+
+    
+    <div class="declare"> 
+      <ul class="post-copyright">
+        <li>
+          <strong>本文作者：</strong>
+          Tiny Beer
+        </li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="http://example.com/2024/05/26/runtime-metrics/" title="GO官方metrics包" target="_blank">http://example.com/2024/05/26/runtime-metrics/</a>
+        </li>
+        
+        <li>
+          <strong>版权声明： </strong>
           
+          本博客所有文章除特别声明外，均采用 <a href="https://github.com/JoeyBling/hexo-theme-yilia-plus/blob/master/LICENSE" rel="external nofollow" target="_blank">MIT</a> 许可协议。转载请注明出处！
+        </li>
+        
+      </ul>
+    </div>
+    
+
+  </div>
+  <div class="article-info article-info-index">
+    
+    
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -252,170 +395,121 @@
 		</ul>
 	</div>
 
-          
+    
 
+    
+
+    
+    
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <!-- <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a> -->
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2024/05/26/runtime-metrics/" alt="微信分享二维码"> -->
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+
+    
+    <div class="clearfix"></div>
+  </div>
   </div>
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="archive-article-date">  
-        <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">5.3k字</span>
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">28分</span>
-        <time datetime="2024-05-24T09:25:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-24</time>
-</a>
 
+
+<nav id="article-nav">
+  
+  
+    <a href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Gin学习笔记</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Interface"><span class="toc-number">1.</span> <span class="toc-text">Interface</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%87%87%E6%A0%B7"><span class="toc-number">2.</span> <span class="toc-text">采样</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8C%87%E6%A0%87%E4%BF%A1%E6%81%AF"><span class="toc-number">3.</span> <span class="toc-text">指标信息</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#CGO"><span class="toc-number">3.1.</span> <span class="toc-text">CGO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GO-%E8%B0%83%E7%94%A8-C-%E6%AC%A1%E6%95%B0"><span class="toc-number">3.1.1.</span> <span class="toc-text">GO 调用 C 次数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU"><span class="toc-number">3.2.</span> <span class="toc-text">CPU</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E5%8A%A9-GC-%E7%9A%84-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.1.</span> <span class="toc-text">协助 GC 的 cpu 时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%93%E6%B3%A8-GC-%E7%9A%84-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.2.</span> <span class="toc-text">专注 GC 的 cpu 时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A9%BA%E9%97%B2-CPU-%E5%8F%82%E4%B8%8E-GC-%E7%9A%84%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.3.</span> <span class="toc-text">空闲 CPU 参与 GC 的时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BB%E5%8A%A1%E6%9A%82%E5%81%9C%E6%97%B6-GC-%E6%89%80%E7%94%A8-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.4.</span> <span class="toc-text">任务暂停时 GC 所用 cpu 时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%80%BB%E6%97%B6%E9%95%BF"><span class="toc-number">3.2.5.</span> <span class="toc-text">GC 总时长</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CPU-%E7%A9%BA%E9%97%B2%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.6.</span> <span class="toc-text">CPU 空闲时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E5%8A%A9%E7%B4%A7%E6%80%A5%E5%86%85%E5%AD%98%E9%87%8A%E6%94%BE-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.7.</span> <span class="toc-text">协助紧急内存释放 cpu 时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E6%9C%9F%E9%97%B4%E9%87%8A%E6%94%BE%E5%86%85%E5%AD%98-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.8.</span> <span class="toc-text">后台任务期间释放内存 cpu 时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8A%E6%94%BE%E5%86%85%E5%AD%98%E6%80%BB%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.9.</span> <span class="toc-text">释放内存总时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB-cpu-%E5%8F%AF%E7%94%A8%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.10.</span> <span class="toc-text">总 cpu 可用时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%94%A8%E6%88%B7-cpu-%E6%97%B6%E9%97%B4"><span class="toc-number">3.2.11.</span> <span class="toc-text">总用户 cpu 时间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GC-%E5%BE%AA%E7%8E%AF"><span class="toc-number">3.3.</span> <span class="toc-text">GC 循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8-GC-%E6%AC%A1%E6%95%B0"><span class="toc-number">3.3.1.</span> <span class="toc-text">自动 GC 次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E5%8A%A8-GC-%E6%AC%A1%E6%95%B0"><span class="toc-number">3.3.2.</span> <span class="toc-text">主动 GC 次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB-GC-%E6%AC%A1%E6%95%B0"><span class="toc-number">3.3.3.</span> <span class="toc-text">总 GC 次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A6%E5%8F%91-GC-%E7%9A%84%E5%A0%86%E5%A4%A7%E5%B0%8F%E7%9B%B8%E5%AF%B9%E5%80%BC"><span class="toc-number">3.3.4.</span> <span class="toc-text">触发 GC 的堆大小相对值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E9%99%90%E5%88%B6"><span class="toc-number">3.3.5.</span> <span class="toc-text">内存大小限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-number">3.3.6.</span> <span class="toc-text">堆内存分配柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%AF%E8%AE%A1%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="toc-number">3.3.7.</span> <span class="toc-text">累计堆内存分配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B4%AF%E8%AE%A1%E8%A7%A6%E5%8F%91%E5%A0%86%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%AC%A1%E6%95%B0"><span class="toc-number">3.3.8.</span> <span class="toc-text">累计触发堆内存分配次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E9%87%8A%E6%94%BE%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-number">3.3.9.</span> <span class="toc-text">堆内存释放柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E5%A0%86%E5%86%85%E5%AD%98%E9%87%8A%E6%94%BE"><span class="toc-number">3.3.10.</span> <span class="toc-text">总堆内存释放</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E9%87%8A%E6%94%BE%E6%AC%A1%E6%95%B0"><span class="toc-number">3.3.11.</span> <span class="toc-text">堆内存释放次数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E5%BE%AA%E7%8E%AF%E5%90%8E%E7%9B%AE%E6%A0%87%E5%A0%86%E5%86%85%E5%AD%98"><span class="toc-number">3.3.12.</span> <span class="toc-text">GC 循环后目标堆内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B4%BB%E8%B7%83%E5%A0%86%E5%86%85%E5%AD%98"><span class="toc-number">3.3.13.</span> <span class="toc-text">活跃堆内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E5%A0%86%E5%AF%B9%E8%B1%A1%E6%95%B0"><span class="toc-number">3.3.14.</span> <span class="toc-text">总堆对象数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E4%B8%8A%E5%B0%8F%E5%AF%B9%E8%B1%A1%E6%95%B0"><span class="toc-number">3.3.15.</span> <span class="toc-text">堆上小对象数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E6%AC%A1%E5%86%85%E5%AD%98%E9%99%90%E5%88%B6%E8%A7%A6%E5%8F%91%E6%97%B6%E9%97%B4"><span class="toc-number">3.3.16.</span> <span class="toc-text">上次内存限制触发时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%9A%82%E5%81%9C-%E5%90%AF%E7%94%A8"><span class="toc-number">3.3.17.</span> <span class="toc-text">GC 暂停 启用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E5%8F%AF%E6%89%AB%E6%8F%8F%E6%80%BB%E5%8F%98%E9%87%8F%E7%A9%BA%E9%97%B4"><span class="toc-number">3.3.18.</span> <span class="toc-text">GC 可扫描总变量空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E5%8F%AF%E6%89%AB%E6%8F%8F%E6%89%80%E6%9C%89%E5%A0%86%E7%A9%BA%E9%97%B4"><span class="toc-number">3.3.19.</span> <span class="toc-text">GC 可扫描所有堆空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%89%AB%E6%8F%8F%E6%A0%88%E5%A4%A7%E5%B0%8F"><span class="toc-number">3.3.20.</span> <span class="toc-text">GC 扫描栈大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%89%AB%E6%8F%8F%E6%80%BB%E7%A9%BA%E9%97%B4"><span class="toc-number">3.3.21.</span> <span class="toc-text">GC 扫描总空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%8D%8F%E7%A8%8B%E6%A0%88%E5%A4%A7%E5%B0%8F"><span class="toc-number">3.3.22.</span> <span class="toc-text">新协程栈大小</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98"><span class="toc-number">3.4.</span> <span class="toc-text">内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BB%A1%E8%B6%B3%E9%87%8A%E6%94%BE%E8%A6%81%E6%B1%82%E7%9A%84%E5%86%85%E5%AD%98"><span class="toc-number">3.4.1.</span> <span class="toc-text">满足释放要求的内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A0%86%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98"><span class="toc-number">3.4.2.</span> <span class="toc-text">堆对象内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%B2%E9%87%8A%E6%94%BE%E7%9A%84%E5%86%85%E5%AD%98"><span class="toc-number">3.4.3.</span> <span class="toc-text">已释放的内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%88%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F"><span class="toc-number">3.4.4.</span> <span class="toc-text">栈内存大小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%9A%84%E5%A0%86%E5%86%85%E5%AD%98"><span class="toc-number">3.4.5.</span> <span class="toc-text">未使用的堆内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mcahe-%E4%B8%AD%E6%9C%AA%E4%BD%BF%E7%94%A8%E5%86%85%E5%AD%98"><span class="toc-number">3.4.6.</span> <span class="toc-text">mcahe 中未使用内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mcache-%E4%B8%AD%E5%9C%A8%E4%BD%BF%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98"><span class="toc-number">3.4.7.</span> <span class="toc-text">mcache 中在使用的内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mspan-%E4%B8%AD%E6%9C%AA%E4%BD%BF%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98"><span class="toc-number">3.4.8.</span> <span class="toc-text">mspan 中未使用的内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mspan-%E4%B8%AD%E5%9C%A8%E4%BD%BF%E7%94%A8%E7%9A%84%E5%86%85%E5%AD%98"><span class="toc-number">3.4.9.</span> <span class="toc-text">mspan 中在使用的内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E4%BF%9D%E7%95%99%E6%88%96%E8%80%85-metadata-%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98"><span class="toc-number">3.4.10.</span> <span class="toc-text">运行时保留或者 metadata 占用内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E6%A0%88%E5%86%85%E5%AD%98-cgo"><span class="toc-number">3.4.11.</span> <span class="toc-text">系统栈内存 cgo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8"><span class="toc-number">3.4.12.</span> <span class="toc-text">其他内存占用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#profile-%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8"><span class="toc-number">3.4.13.</span> <span class="toc-text">profile 内存占用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%A4-cgo-%E5%A4%96%E4%BA%A7%E7%94%9F%E7%9A%84%E6%89%80%E6%9C%89%E5%86%85%E5%AD%98"><span class="toc-number">3.4.14.</span> <span class="toc-text">除 cgo 外产生的所有内存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6"><span class="toc-number">3.5.</span> <span class="toc-text">调度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%A4%A7%E7%BA%BF%E7%A8%8B%E6%95%B0"><span class="toc-number">3.5.1.</span> <span class="toc-text">最大线程数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%8F%E7%A8%8B%E6%95%B0"><span class="toc-number">3.5.2.</span> <span class="toc-text">协程数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E5%BA%A6%E5%BB%B6%E8%BF%9F%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-number">3.5.3.</span> <span class="toc-text">调度延迟柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%9A%82%E5%81%9C%E6%97%B6%E9%97%B4%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-number">3.5.4.</span> <span class="toc-text">GC 暂停时间柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%AD%89%E5%BE%85%E6%97%B6%E9%97%B4%E6%9F%B1%E7%8A%B6%E5%9B%BE"><span class="toc-number">3.5.5.</span> <span class="toc-text">其他等待时间柱状图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC-%E6%9A%82%E5%81%9C%E5%86%B3%E7%AD%96%E5%88%B0%E9%87%8D%E5%90%AF%E7%9A%84%E6%97%B6%E9%97%B4"><span class="toc-number">3.5.6.</span> <span class="toc-text">GC 暂停决策到重启的时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%AD%89%E5%BE%85%E6%97%B6%E9%97%B4"><span class="toc-number">3.5.7.</span> <span class="toc-text">其他等待时间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%94%81%E7%AB%9E%E4%BA%89"><span class="toc-number">3.6.</span> <span class="toc-text">锁竞争</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%96%E9%94%81%E7%B4%AF%E8%AE%A1%E7%AD%89%E5%BE%85%E6%97%B6%E9%97%B4"><span class="toc-number">3.6.1.</span> <span class="toc-text">取锁累计等待时间</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">3.7.</span> <span class="toc-text">测试</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Gin学习笔记</a>
-	
-    </h1>
-  
-
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">手册</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2024/05/24/gofumpt/" class="archive-article-date">  
-        <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">1.1k字</span>
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">5分</span>
-        <time datetime="2024-05-24T05:08:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-24</time>
-</a>
-
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2024/05/24/gofumpt/">gofumpt</a>
-	
-    </h1>
-  
+        
+        
+    </div>
+</aside>
 
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	
-<a href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/" class="archive-article-date">  
-        <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">744字</span>
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">3分</span>
-        <time datetime="2024-05-22T08:42:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2024-05-22</time>
-</a>
-
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-	
-	  <a class="archive-article-title" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/">博客搭建 Hexo &amp;&amp; Github</a>
-	
-    </h1>
-  
 
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">玩虾</a>
-        		</li>
-      		
-		</ul>
-	</div>
 
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 
-    
+
+
+
+
+
 
 
           </div>
@@ -444,8 +538,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
