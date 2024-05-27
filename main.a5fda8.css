@@ -1912,8 +1912,83 @@ pre .id {
 .article-inner h4,
 .article-inner h5,
 .article-inner h6 {
+  font-style: italic;
   font-weight: 900;
 }
+
+/* 设置风车颜色 */
+.article-inner h1::before {
+  color: #ef50a8;
+  margin-left: -1.55rem;
+  font-size: 1.3rem;
+  margin-top: -0.23rem;
+}
+.article-inner h2::before {
+  color: #fb7061;
+  margin-left: -1.35rem;
+  font-size: 1.1rem;
+  margin-top: -0.12rem;
+}
+.article-inner h3::before {
+  color: #ffbf00;
+  margin-left: -1.22rem;
+  font-size: 0.95rem;
+  margin-top: -0.09rem;
+}
+.article-inner h4::before {
+  color: #a9e000;
+  margin-left: -1.05rem;
+  font-size: 0.8rem;
+  margin-top: -0.09rem;
+}
+.article-inner h5::before {
+  color: #57c850;
+  margin-left: -0.9rem;
+  font-size: 0.7rem;
+  margin-top: 0rem;
+}
+.article-inner h6::before {
+  color: #5ec1e0;
+  margin-left: -0.9rem;
+  font-size: 0.66rem;
+  margin-top: 0rem;
+}
+
+@-webkit-keyframes fan-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(-1turn);
+    transform: rotate(-1turn);
+  }
+}
+@keyframes fan-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(-1turn);
+    transform: rotate(-1turn);
+  }
+}
+
+.article-inner h1::before,
+.article-inner h2::before,
+.article-inner h3::before,
+.article-inner h4::before,
+.article-inner h5::before,
+.article-inner h6::before {
+  content: "\f863";
+  font-style: normal;
+  display: inline-block;
+  font-family: "FontAwesome";
+  -webkit-animation: fan-spin 4s linear infinite;
+  animation: fan-spin 4s linear infinite;
+}
+
 .article-inner h1:first-child,
 .article-inner h2:first-child,
 .article-inner h3:first-child,
