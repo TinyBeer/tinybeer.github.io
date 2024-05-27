@@ -2465,7 +2465,7 @@ pre .id {
   min-width: 200px;
   width: auto;
   font-size: 14px;
-  text-shadow: 1px 1px 1px #398199;
+  /* text-shadow: 1px 1px 1px #398199; */
   bottom: 10%;
   transform-origin: 100% 100%;
   transform: translate3d(0, -10px, 0) rotate3d(1, 1, 1, -30deg);
@@ -2489,6 +2489,7 @@ pre .id {
 .toc-container.tooltip-left .tooltip-east .tooltip-content .toc-article li {
   white-space: nowrap;
 }
+
 .toc-container.tooltip-left .tooltip:hover .tooltip-content {
   bottom: -10px;
   transform: translate(0);
@@ -3608,4 +3609,19 @@ a.pswp__share--download:hover {
 .pswp__error-msg a {
   color: #ccc;
   text-decoration: underline;
+}
+
+/* 帧率检测 */
+#fps {
+  position: fixed;
+  /* 指定位置 */
+  left: 10px;
+  bottom: 10px;
+  z-index: 1919810;
+}
+#fps {
+  background-color: rgba(255, 255, 255, 0.2);
+  /* backdrop-filter: var(--backdrop-filter); */
+  padding: 4px;
+  border-radius: 4px;
 }
