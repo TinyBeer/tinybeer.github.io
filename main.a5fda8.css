@@ -166,6 +166,20 @@ section,
 summary {
   display: block;
 }
+
+article {
+  animation: grouwIn 0.5s linear 1;
+}
+
+@keyframes grouwIn {
+  from {
+    scale: 0.6;
+  }
+  to {
+    scale: 1;
+  }
+}
+
 audio,
 canvas,
 progress,
