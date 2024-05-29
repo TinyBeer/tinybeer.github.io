@@ -7,21 +7,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>🍺Let&#39;s Beer!!!</title>
+  <title>sync.Pool详解 | 🍺Let&#39;s Beer!!!</title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   
-    
-    <!-- <meta name="keywords" content="">
-    <meta name="description" content=""> -->
-  
-  <meta property="og:type" content="website">
-<meta property="og:title" content="🍺Let&#39;s Beer!!!">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="sync.Pool是一个协程安全的临时对象存储池。主要是用来缓存频繁使用的对象，用以减少 GC 压力。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sync.Pool详解">
+<meta property="og:url" content="http://example.com/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="🍺Let&#39;s Beer!!!">
+<meta property="og:description" content="sync.Pool是一个协程安全的临时对象存储池。主要是用来缓存频繁使用的对象，用以减少 GC 压力。">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2024/05/29/QRx2TqmSzKbD7v1.png">
+<meta property="article:published_time" content="2024-05-29T11:34:19.000Z">
+<meta property="article:modified_time" content="2024-05-29T11:51:14.072Z">
 <meta property="article:author" content="Tiny Beer">
+<meta property="article:tag" content="Golang">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/05/29/QRx2TqmSzKbD7v1.png">
   
     <link rel="alternative" href="/atom.xml" title="🍺Let&#39;s Beer!!!" type="application/atom+xml">
   
@@ -209,14 +212,9 @@
               class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-
-  
-    <article id="post-sync-Pool详解" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-sync-Pool详解" class="article  article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner"  
-    
-    onclick="window.location.replace('/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/')"
-    
+  
     >
      
     
@@ -275,10 +273,8 @@
       
     
   
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/">sync.Pool详解</a>
-	
+    <h1 class="article-title" itemprop="name">
+      sync.Pool详解
     </h1>
   
 
@@ -287,14 +283,98 @@
   
   <div class="article-entry" itemprop="articleBody">
     
-    <p><code>sync.Pool</code>是一个协程安全的临时对象存储池。主要是用来缓存频繁使用的对象，用以减少 GC 压力。
-    
-    <a class="article-more-a" href="/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/#more">more >></a>
-    
-    
+    <p><code>sync.Pool</code>是一个协程安全的临时对象存储池。主要是用来缓存频繁使用的对象，用以减少 GC 压力。<span id="more"></span></p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><p>先来看看官方提供的示例，利用<code>sync.Pool</code>模拟实现的一个日志打印函数。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> bufPool = sync.Pool&#123;</span><br><span class="line">	New: <span class="function"><span class="keyword">func</span><span class="params">()</span></span> any &#123;</span><br><span class="line">		<span class="comment">// The Pool&#x27;s New function should generally only return pointer</span></span><br><span class="line">		<span class="comment">// types, since a pointer can be put into the return interface</span></span><br><span class="line">		<span class="comment">// value without an allocation:</span></span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">new</span>(bytes.Buffer)</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// timeNow is a fake version of time.Now for tests.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">timeNow</span><span class="params">()</span></span> time.Time &#123;</span><br><span class="line">	<span class="keyword">return</span> time.Unix(<span class="number">1136214245</span>, <span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Log</span><span class="params">(w io.Writer, key, val <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	b := bufPool.Get().(*bytes.Buffer)</span><br><span class="line">	b.Reset()</span><br><span class="line">	<span class="comment">// Replace this with time.Now() in a real logger.</span></span><br><span class="line">	b.WriteString(timeNow().UTC().Format(time.RFC3339))</span><br><span class="line">	b.WriteByte(<span class="string">&#x27; &#x27;</span>)</span><br><span class="line">	b.WriteString(key)</span><br><span class="line">	b.WriteByte(<span class="string">&#x27;=&#x27;</span>)</span><br><span class="line">	b.WriteString(val)</span><br><span class="line">	w.Write(b.Bytes())</span><br><span class="line">	bufPool.Put(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	Log(os.Stdout, <span class="string">&quot;path&quot;</span>, <span class="string">&quot;/search?q=flowers&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>核心模式就是：</p>
+<ol>
+<li>实例化<code>Pool</code>对象，注入<code>New</code>方法。<br>通过<code>var</code>创建一个<code>Pool</code>对象，并向其注入了一个<code>New</code>方法，用于创建缓存对向。</li>
+<li><code>Get</code>取用对象，并恢复清洗使用痕迹。<br>使用<code>Get</code>方法从池中取得一个对象，然后断言为一个指向<code>bytes.Buffer</code>的指针，并通过<code>Reset</code>重置<code>bytes.Buffer</code>内容。</li>
+<li>使用对象拼接并打印日志</li>
+<li>通过<code>Put</code>暂存使用完的缓存对象</li>
+<li>重复 2~4 步骤</li>
+</ol>
+<blockquote>
+<p>注意事项</p>
+</blockquote>
+<ol>
+<li>Pool 不适用于需要长期保持的对象，因为 Pool 中的对象不保证存活，可能被 GC 回收。如数据库连接。</li>
+<li>Pool 不适合保存数据。无法预测 Pool 中的 GC 行为。</li>
+<li>Pool 不适合保存创建无法预测的对象。</li>
+</ol>
+<h1 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h1><h2 id="数据结构解析"><a href="#数据结构解析" class="headerlink" title="数据结构解析"></a>数据结构解析</h2><p><img src="https://s2.loli.net/2024/05/29/QRx2TqmSzKbD7v1.png" alt="struct.png"></p>
+<h3 id="Pool"><a href="#Pool" class="headerlink" title="Pool"></a>Pool</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">type</span> Pool <span class="keyword">struct</span> &#123;</span><br><span class="line">	noCopy noCopy</span><br><span class="line"></span><br><span class="line">	local     unsafe.Pointer <span class="comment">// local fixed-size per-P pool, actual type is [P]poolLocal</span></span><br><span class="line">	localSize <span class="type">uintptr</span>        <span class="comment">// size of the local array</span></span><br><span class="line"></span><br><span class="line">	victim     unsafe.Pointer <span class="comment">// local from previous cycle</span></span><br><span class="line">	victimSize <span class="type">uintptr</span>        <span class="comment">// size of victims array</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// New optionally specifies a function to generate</span></span><br><span class="line">	<span class="comment">// a value when Get would otherwise return nil.</span></span><br><span class="line">	<span class="comment">// It may not be changed concurrently with calls to Get.</span></span><br><span class="line">	New <span class="function"><span class="keyword">func</span><span class="params">()</span></span> any</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="nocopy"><a href="#nocopy" class="headerlink" title="nocopy"></a>nocopy</h3><p>sync 包中用来避免对象被拷贝的一种方法。正常编译不受影响，但使用<code>go vet</code>时候会进行提示。<br>我们可以使用如下代码进行测试：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> bufPool = sync.Pool&#123;</span><br><span class="line">	New: <span class="function"><span class="keyword">func</span><span class="params">()</span></span> any &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">new</span>(bytes.Buffer)</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	_ = bufPool</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">go vet .</span><br><span class="line"><span class="comment"># test</span></span><br><span class="line"><span class="comment"># [test]</span></span><br><span class="line">.\main.go:15:6: assignment copies lock value to _: sync.Pool contains sync.noCopy</span><br></pre></td></tr></table></figure>
+
+<h3 id="local-localSize"><a href="#local-localSize" class="headerlink" title="local &amp;&amp; localSize"></a>local &amp;&amp; localSize</h3><p>一个固定长度的本地对象池数组，准确的类型为<code>[P]poolLocal</code>，其中 P 对应<code>runtime.GOMAXPROCS(0)</code>返回值，如果在 GC 间进行了修改，旧 local 会被丢弃，并且进行重新分配新的 local。localSize 是用来保存 local 长度的，用以对<code>local</code>数组空间进行遍历。</p>
+<h3 id="victim-victimSize"><a href="#victim-victimSize" class="headerlink" title="victim &amp;&amp; victimSize"></a>victim &amp;&amp; victimSize</h3><p>victim 和 victimSize，其实是旧的 local 和 localSize, 在执行 GC 时会将原 victim 和 victimSize 回收，并将 local 和 localSize 放入。这样操作是可以避免高负载时，突然 GC 造成的抖动（需要从新创建大量对象以满足负载）。</p>
+<h3 id="New"><a href="#New" class="headerlink" title="New"></a>New</h3><p>使用用来创建对象的函数，由用户自定义。</p>
+<h3 id="poolLocal"><a href="#poolLocal" class="headerlink" title="poolLocal"></a>poolLocal</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">type</span> poolLocal <span class="keyword">struct</span> &#123;</span><br><span class="line">	poolLocalInternal</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Prevents false sharing on widespread platforms with</span></span><br><span class="line">	<span class="comment">// 128 mod (cache line size) = 0 .</span></span><br><span class="line">	pad [<span class="number">128</span> - unsafe.Sizeof(poolLocalInternal&#123;&#125;)%<span class="number">128</span>]<span class="type">byte</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Local per-P Pool appendix.</span></span><br><span class="line"><span class="keyword">type</span> poolLocalInternal <span class="keyword">struct</span> &#123;</span><br><span class="line">	private any       <span class="comment">// Can be used only by the respective P.</span></span><br><span class="line">	shared  poolChain <span class="comment">// Local P can pushHead/popHead; any P can popTail.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> poolChain <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// head is the poolDequeue to push to. This is only accessed</span></span><br><span class="line">	<span class="comment">// by the producer, so doesn&#x27;t need to be synchronized.</span></span><br><span class="line">	head *poolChainElt</span><br><span class="line"></span><br><span class="line">	<span class="comment">// tail is the poolDequeue to popTail from. This is accessed</span></span><br><span class="line">	<span class="comment">// by consumers, so reads and writes must be atomic.</span></span><br><span class="line">	tail *poolChainElt</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> poolChainElt <span class="keyword">struct</span> &#123;</span><br><span class="line">	poolDequeue</span><br><span class="line"></span><br><span class="line">	<span class="comment">// next and prev link to the adjacent poolChainElts in this</span></span><br><span class="line">	<span class="comment">// poolChain.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// next is written atomically by the producer and read</span></span><br><span class="line">	<span class="comment">// atomically by the consumer. It only transitions from nil to</span></span><br><span class="line">	<span class="comment">// non-nil.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// prev is written atomically by the consumer and read</span></span><br><span class="line">	<span class="comment">// atomically by the producer. It only transitions from</span></span><br><span class="line">	<span class="comment">// non-nil to nil.</span></span><br><span class="line">	next, prev *poolChainElt</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> poolDequeue <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="comment">// headTail packs together a 32-bit head index and a 32-bit</span></span><br><span class="line">	<span class="comment">// tail index. Both are indexes into vals modulo len(vals)-1.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// tail = index of oldest data in queue</span></span><br><span class="line">	<span class="comment">// head = index of next slot to fill</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// Slots in the range [tail, head) are owned by consumers.</span></span><br><span class="line">	<span class="comment">// A consumer continues to own a slot outside this range until</span></span><br><span class="line">	<span class="comment">// it nils the slot, at which point ownership passes to the</span></span><br><span class="line">	<span class="comment">// producer.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// The head index is stored in the most-significant bits so</span></span><br><span class="line">	<span class="comment">// that we can atomically add to it and the overflow is</span></span><br><span class="line">	<span class="comment">// harmless.</span></span><br><span class="line">	headTail atomic.Uint64</span><br><span class="line"></span><br><span class="line">	<span class="comment">// vals is a ring buffer of interface&#123;&#125; values stored in this</span></span><br><span class="line">	<span class="comment">// dequeue. The size of this must be a power of 2.</span></span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">// vals[i].typ is nil if the slot is empty and non-nil</span></span><br><span class="line">	<span class="comment">// otherwise. A slot is still in use until *both* the tail</span></span><br><span class="line">	<span class="comment">// index has moved beyond it and typ has been set to nil. This</span></span><br><span class="line">	<span class="comment">// is set to nil atomically by the consumer and read</span></span><br><span class="line">	<span class="comment">// atomically by the producer.</span></span><br><span class="line">	vals []eface</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> eface <span class="keyword">struct</span> &#123;</span><br><span class="line">	typ, val unsafe.Pointer</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>poolLocalInternal 是数据的存储空间，其中 private 是当前 P 私有的空间，可以存取一个对象。</li>
+<li>shared 是一个双向链表, 头结点只有当前 P 能访问（只有当前 P 能放入对象）所有不用做并发控制。尾结点所有 P 都能访问，所以要做并发控制。shared 中结点 poolChainElt 保存的元素是一个数组实现的循环链表 poolDequeue。</li>
+<li>poolDequeue 中 headTail 为一个 uint64 数据，高 32 低 32 为分别保存循环链表的头尾。数据元素为 eface。另外这个循环队列如果满了以后，会创建一个两倍长度的新队列。</li>
+<li>eface 中是两指针，分别保存存储对象的类型和值。</li>
+</ul>
+<h2 id="关键流程"><a href="#关键流程" class="headerlink" title="关键流程"></a>关键流程</h2><h3 id="Get"><a href="#Get" class="headerlink" title="Get"></a>Get</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span></span> Get() any &#123;</span><br><span class="line">	<span class="keyword">if</span> race.Enabled &#123;</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l, pid := p.pin()</span><br><span class="line">	x := l.private</span><br><span class="line">	l.private = <span class="literal">nil</span></span><br><span class="line">	<span class="keyword">if</span> x == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Try to pop the head of the local shard. We prefer</span></span><br><span class="line">		<span class="comment">// the head over the tail for temporal locality of</span></span><br><span class="line">		<span class="comment">// reuse.</span></span><br><span class="line">		x, _ = l.shared.popHead()</span><br><span class="line">		<span class="keyword">if</span> x == <span class="literal">nil</span> &#123;</span><br><span class="line">			x = p.getSlow(pid)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	<span class="keyword">if</span> race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">		<span class="keyword">if</span> x != <span class="literal">nil</span> &#123;</span><br><span class="line">			race.Acquire(poolRaceAddr(x))</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> x == <span class="literal">nil</span> &amp;&amp; p.New != <span class="literal">nil</span> &#123;</span><br><span class="line">		x = p.New()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>Get 流程</p>
+<ul>
+<li>调用 pin 获取 poolLocal，尝试从 private 中获取对象，如果由可用对象直接返回</li>
+<li>否则尝试从 shared 中获取，如果有则返回</li>
+<li>否则执行 getSlow 流程</li>
+<li>依旧没有获取到对象则创建新的对象</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span></span> getSlow(pid <span class="type">int</span>) any &#123;</span><br><span class="line">	<span class="comment">// See the comment in pin regarding ordering of the loads.</span></span><br><span class="line">	size := runtime_LoadAcquintptr(&amp;p.localSize) <span class="comment">// load-acquire</span></span><br><span class="line">	locals := p.local                            <span class="comment">// load-consume</span></span><br><span class="line">	<span class="comment">// Try to steal one element from other procs.</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="type">int</span>(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i+<span class="number">1</span>)%<span class="type">int</span>(size))</span><br><span class="line">		<span class="keyword">if</span> x, _ := l.shared.popTail(); x != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Try the victim cache. We do this after attempting to steal</span></span><br><span class="line">	<span class="comment">// from all primary caches because we want objects in the</span></span><br><span class="line">	<span class="comment">// victim cache to age out if at all possible.</span></span><br><span class="line">	size = atomic.LoadUintptr(&amp;p.victimSize)</span><br><span class="line">	<span class="keyword">if</span> <span class="type">uintptr</span>(pid) &gt;= size &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line">	locals = p.victim</span><br><span class="line">	l := indexLocal(locals, pid)</span><br><span class="line">	<span class="keyword">if</span> x := l.private; x != <span class="literal">nil</span> &#123;</span><br><span class="line">		l.private = <span class="literal">nil</span></span><br><span class="line">		<span class="keyword">return</span> x</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="type">int</span>(size); i++ &#123;</span><br><span class="line">		l := indexLocal(locals, (pid+i)%<span class="type">int</span>(size))</span><br><span class="line">		<span class="keyword">if</span> x, _ := l.shared.popTail(); x != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> x</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Mark the victim cache as empty for future gets don&#x27;t bother</span></span><br><span class="line">	<span class="comment">// with it.</span></span><br><span class="line">	atomic.StoreUintptr(&amp;p.victimSize, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>getSlow 流程</p>
+<ul>
+<li>尝试从其他 P 的 poolLocal.shared 中获取对象，成功则返回</li>
+<li>否则尝试从 victim 中获取对象，顺序依旧是 private、local shared，shared，成功则返回</li>
+<li>否则标记 victim 空后返回空，进入创建新对象的流程</li>
+</ul>
+<h3 id="Put"><a href="#Put" class="headerlink" title="Put"></a>Put</h3><figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Put adds x to the pool.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *Pool)</span></span> Put(x any) &#123;</span><br><span class="line">	<span class="keyword">if</span> x == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> race.Enabled &#123;</span><br><span class="line">		<span class="keyword">if</span> runtime_randn(<span class="number">4</span>) == <span class="number">0</span> &#123;</span><br><span class="line">			<span class="comment">// Randomly drop x on floor.</span></span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		race.ReleaseMerge(poolRaceAddr(x))</span><br><span class="line">		race.Disable()</span><br><span class="line">	&#125;</span><br><span class="line">	l, _ := p.pin()</span><br><span class="line">	<span class="keyword">if</span> l.private == <span class="literal">nil</span> &#123;</span><br><span class="line">		l.private = x</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		l.shared.pushHead(x)</span><br><span class="line">	&#125;</span><br><span class="line">	runtime_procUnpin()</span><br><span class="line">	<span class="keyword">if</span> race.Enabled &#123;</span><br><span class="line">		race.Enable()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Put 的流程就简单很多了</p>
+<ul>
+<li>先尝试存在本地 private</li>
+<li>然后直接存在 local shared 里。</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 这里看一看的  循环队列双倍增长的逻辑</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *poolChain)</span></span> pushHead(val any) &#123;</span><br><span class="line">	d := c.head</span><br><span class="line">	<span class="keyword">if</span> d == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="comment">// Initialize the chain.</span></span><br><span class="line">		<span class="keyword">const</span> initSize = <span class="number">8</span> <span class="comment">// Must be a power of 2</span></span><br><span class="line">		d = <span class="built_in">new</span>(poolChainElt)</span><br><span class="line">		d.vals = <span class="built_in">make</span>([]eface, initSize)</span><br><span class="line">		c.head = d</span><br><span class="line">		storePoolChainElt(&amp;c.tail, d)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> d.pushHead(val) &#123;</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// The current dequeue is full. Allocate a new one of twice</span></span><br><span class="line">	<span class="comment">// the size.</span></span><br><span class="line">	newSize := <span class="built_in">len</span>(d.vals) * <span class="number">2</span></span><br><span class="line">	<span class="keyword">if</span> newSize &gt;= dequeueLimit &#123;</span><br><span class="line">		<span class="comment">// Can&#x27;t make it any bigger.</span></span><br><span class="line">		newSize = dequeueLimit</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	d2 := &amp;poolChainElt&#123;prev: d&#125;</span><br><span class="line">	d2.vals = <span class="built_in">make</span>([]eface, newSize)</span><br><span class="line">	c.head = d2</span><br><span class="line">	storePoolChainElt(&amp;d.next, d2)</span><br><span class="line">	d2.pushHead(val)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h3><!-- todo 有空来添加 -->
+<!-- todo test file 解析 -->
 
     
 
+    
+
+    
+    <div class="declare"> 
+      <ul class="post-copyright">
+        <li>
+          <strong>本文作者：</strong>
+          Tiny Beer
+        </li>
+        <li>
+          <strong>本文链接：</strong>
+          <a href="http://example.com/2024/05/29/sync-Pool详解/" title="sync.Pool详解" target="_blank">http://example.com/2024/05/29/sync-Pool详解/</a>
+        </li>
+        
+        <li>
+          <strong>版权声明： </strong>
+          
+          本博客所有文章除特别声明外，均采用 <a href="https://github.com/JoeyBling/hexo-theme-yilia-plus/blob/master/LICENSE" rel="external nofollow" target="_blank">MIT</a> 许可协议。转载请注明出处！
+        </li>
+        
+      </ul>
+    </div>
     
 
   <!-- </div>
@@ -302,260 +382,58 @@
     
  
     
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/">展开全文 >></a>
-    </p>
-    
 
     
-    <div class="clearfix"></div>
-  </div>
-  </div> -->
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        
-
-            <div class="jump-container" id="js-jump-container" style="display:none;">
-                <a href="javascript:void(0)"  class="mod-side-operation__jump-to-top" >
-                    <i id="goup" class="icon-font icon-back"></i>
-                </a>
-            </div>
-                <!-- <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                    <i class="icon-font icon-plane jump-plane"></i>
-                </div> -->
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Gin核心源码解析" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner"  
     
-    onclick="window.location.replace('/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/')"
-    
-    >
-     
-    
-    <header class="article-header">
-      
-	<div class="article-tag tagcloud">
-		<!-- <i class="icon-price-tags icon"></i> -->
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golong</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-    
-      
-<a href="/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="archive-article-date">  
-        <!-- <i class="icon-statistics"></i> -->
-      <span class="post-meta-item-word-count"> 字数统计:</span>
-      <span class="post-count">1.8k字</span>
-      <!-- <i class="icon-book icon"></i> -->
-      <span class="post-meta-item-read-time"> 阅读时长≈</span>
-      <span class="post-count">9分</span>
-        <time class="post-meta-item-post-time" datetime="2024-05-28T09:53:56.000Z" itemprop="datePublished"></i>2024-05-28</time>
-</a>
-
-      
-      
-        
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <!-- <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">1.8k字</span> -->
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
     </span>
-  </span>
-
-  <span class="post-time">
-    <!-- &nbsp; | &nbsp; -->
-    <!-- <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">9分</span>
+    <!-- <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
     </span> -->
-  </span>
+  </div>
 </div>
 
-
-      
-    
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">Gin核心源码解析</a>
-	
-    </h1>
-  
-
-
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p>Gin 是一个轻量级 web 框架，具有简洁、易用、高效等特性，是目前 Go 开源社区最火热的项目之一。
-    
-    <a class="article-more-a" href="/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#more">more >></a>
-    
-    
-
-    
-
-    
-
-  <!-- </div>
-  <div class="article-info article-info-index">
-    
- 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div> -->
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        
-
-            <div class="jump-container" id="js-jump-container" style="display:none;">
-                <a href="javascript:void(0)"  class="mod-side-operation__jump-to-top" >
-                    <i id="goup" class="icon-font icon-back"></i>
-                </a>
-            </div>
-                <!-- <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                    <i class="icon-font icon-plane jump-plane"></i>
-                </div> -->
-        
-        
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+     <!-- <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2024/05/29/sync-Pool%E8%AF%A6%E8%A7%A3/" alt="微信分享二维码"> -->
     </div>
-</aside>
-
-
-
-
-  
-    <article id="post-runtime-metrics" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner"  
-    
-    onclick="window.location.replace('/2024/05/26/runtime-metrics/')"
-    
-    >
-     
-    
-    <header class="article-header">
-      
-	<div class="article-tag tagcloud">
-		<!-- <i class="icon-price-tags icon"></i> -->
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">手册</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-    
-      
-<a href="/2024/05/26/runtime-metrics/" class="archive-article-date">  
-        <!-- <i class="icon-statistics"></i> -->
-      <span class="post-meta-item-word-count"> 字数统计:</span>
-      <span class="post-count">4.1k字</span>
-      <!-- <i class="icon-book icon"></i> -->
-      <span class="post-meta-item-read-time"> 阅读时长≈</span>
-      <span class="post-count">24分</span>
-        <time class="post-meta-item-post-time" datetime="2024-05-26T10:09:59.000Z" itemprop="datePublished"></i>2024-05-26</time>
-</a>
-
-      
-      
-        
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <!-- <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">4.1k字</span> -->
-    </span>
-  </span>
-
-  <span class="post-time">
-    <!-- &nbsp; | &nbsp; -->
-    <!-- <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">24分</span>
-    </span> -->
-  </span>
 </div>
 
-
-      
-    
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/26/runtime-metrics/">GO官方metrics包</a>
-	
-    </h1>
-  
-
-
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p>metrics 包提供了一个稳定的接口来访问由 Go 运行时暴露的预定义好的指标数据。功能类似于 <code>runtime.ReadMemStats</code> 和 <code> runtime/debug.ReadGCStats</code>，但是更加通用。
-    
-    <a class="article-more-a" href="/2024/05/26/runtime-metrics/#more">more >></a>
-    
-    
-
-    
-
-    
-
-  <!-- </div>
-  <div class="article-info article-info-index">
-    
- 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/26/runtime-metrics/">展开全文 >></a>
-    </p>
-    
+<div class="mask js-mask"></div>
 
     
     <div class="clearfix"></div>
@@ -563,8 +441,33 @@
   </div> -->
 </article>
 
+
+<nav id="article-nav">
+  
+  
+    <!-- <a href="/2024/05/28/Gin%E6%A0%B8%E5%BF%83%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Gin核心源码解析</div>
+      <i class="icon-circle-right"></i>
+    </a> -->
+  
+</nav>
+
+
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">源码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">数据结构解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Pool"><span class="toc-number">2.1.1.</span> <span class="toc-text">Pool</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nocopy"><span class="toc-number">2.1.2.</span> <span class="toc-text">nocopy</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#local-localSize"><span class="toc-number">2.1.3.</span> <span class="toc-text">local &amp;&amp; localSize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#victim-victimSize"><span class="toc-number">2.1.4.</span> <span class="toc-text">victim &amp;&amp; victimSize</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#New"><span class="toc-number">2.1.5.</span> <span class="toc-text">New</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#poolLocal"><span class="toc-number">2.1.6.</span> <span class="toc-text">poolLocal</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">2.2.</span> <span class="toc-text">关键流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Get"><span class="toc-number">2.2.1.</span> <span class="toc-text">Get</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Put"><span class="toc-number">2.2.2.</span> <span class="toc-text">Put</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GC"><span class="toc-number">2.2.3.</span> <span class="toc-text">GC</span></a></li></ol></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
         
         
 
@@ -584,381 +487,14 @@
 
 
 
-  
-    <article id="post-Gin学习笔记" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner"  
-    
-    onclick="window.location.replace('/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/')"
-    
-    >
-     
-    
-    <header class="article-header">
-      
-	<div class="article-tag tagcloud">
-		<!-- <i class="icon-price-tags icon"></i> -->
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golang</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">手册</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-    
-      
-<a href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="archive-article-date">  
-        <!-- <i class="icon-statistics"></i> -->
-      <span class="post-meta-item-word-count"> 字数统计:</span>
-      <span class="post-count">5.3k字</span>
-      <!-- <i class="icon-book icon"></i> -->
-      <span class="post-meta-item-read-time"> 阅读时长≈</span>
-      <span class="post-count">28分</span>
-        <time class="post-meta-item-post-time" datetime="2024-05-24T09:25:38.000Z" itemprop="datePublished"></i>2024-05-24</time>
-</a>
-
-      
-      
-        
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <!-- <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">5.3k字</span> -->
-    </span>
-  </span>
-
-  <span class="post-time">
-    <!-- &nbsp; | &nbsp; -->
-    <!-- <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">28分</span>
-    </span> -->
-  </span>
-</div>
-
-
-      
-    
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Gin学习笔记</a>
-	
-    </h1>
-  
-
-
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p><a target="_blank" rel="noopener" href="https://gin-gonic.com/">Gin</a> 是一个用 Golang 编写的 Web 框架。
-    
-    <a class="article-more-a" href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#more">more >></a>
-    
-    
-
-    
-
-    
-
-  <!-- </div>
-  <div class="article-info article-info-index">
-    
- 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/24/Gin%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div> -->
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        
-
-            <div class="jump-container" id="js-jump-container" style="display:none;">
-                <a href="javascript:void(0)"  class="mod-side-operation__jump-to-top" >
-                    <i id="goup" class="icon-font icon-back"></i>
-                </a>
-            </div>
-                <!-- <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                    <i class="icon-font icon-plane jump-plane"></i>
-                </div> -->
-        
-        
-    </div>
-</aside>
 
 
 
 
-  
-    <article id="post-gofumpt" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner"  
-    
-    onclick="window.location.replace('/2024/05/24/gofumpt/')"
-    
-    >
-     
-    
-    <header class="article-header">
-      
-	<div class="article-tag tagcloud">
-		<!-- <i class="icon-price-tags icon"></i> -->
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Golang</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-    
-      
-<a href="/2024/05/24/gofumpt/" class="archive-article-date">  
-        <!-- <i class="icon-statistics"></i> -->
-      <span class="post-meta-item-word-count"> 字数统计:</span>
-      <span class="post-count">1.1k字</span>
-      <!-- <i class="icon-book icon"></i> -->
-      <span class="post-meta-item-read-time"> 阅读时长≈</span>
-      <span class="post-count">5分</span>
-        <time class="post-meta-item-post-time" datetime="2024-05-24T05:08:28.000Z" itemprop="datePublished"></i>2024-05-24</time>
-</a>
-
-      
-      
-        
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <!-- <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">1.1k字</span> -->
-    </span>
-  </span>
-
-  <span class="post-time">
-    <!-- &nbsp; | &nbsp; -->
-    <!-- <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">5分</span>
-    </span> -->
-  </span>
-</div>
-
-
-      
-    
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/24/gofumpt/">gofumpt</a>
-	
-    </h1>
-  
-
-
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p><a target="_blank" rel="noopener" href="https://github.com/mvdan/gofumpt"><code>gofumpt</code></a>比<code>gofmt</code>更严格代码格式化策略。它是<code>gofmt</code>的一个子集。同时<code>gofumpt</code>向后兼容。
-    
-    <a class="article-more-a" href="/2024/05/24/gofumpt/#more">more >></a>
-    
-    
-
-    
-
-    
-
-  <!-- </div>
-  <div class="article-info article-info-index">
-    
- 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/24/gofumpt/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div> -->
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        
-
-            <div class="jump-container" id="js-jump-container" style="display:none;">
-                <a href="javascript:void(0)"  class="mod-side-operation__jump-to-top" >
-                    <i id="goup" class="icon-font icon-back"></i>
-                </a>
-            </div>
-                <!-- <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                    <i class="icon-font icon-plane jump-plane"></i>
-                </div> -->
-        
-        
-    </div>
-</aside>
 
 
 
 
-  
-    <article id="post-博客搭建-Hexo-Github" class="article excerpt article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner"  
-    
-    onclick="window.location.replace('/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/')"
-    
-    >
-     
-    
-    <header class="article-header">
-      
-	<div class="article-tag tagcloud">
-		<!-- <i class="icon-price-tags icon"></i> -->
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">玩虾</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-    
-      
-<a href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/" class="archive-article-date">  
-        <!-- <i class="icon-statistics"></i> -->
-      <span class="post-meta-item-word-count"> 字数统计:</span>
-      <span class="post-count">744字</span>
-      <!-- <i class="icon-book icon"></i> -->
-      <span class="post-meta-item-read-time"> 阅读时长≈</span>
-      <span class="post-count">3分</span>
-        <time class="post-meta-item-post-time" datetime="2024-05-22T08:42:05.000Z" itemprop="datePublished"></i>2024-05-22</time>
-</a>
-
-      
-      
-        
-<div style="margin-top:10px;">
-  <span class="post-time">
-    <span class="post-meta-item-icon">
-      <!-- fonts.scss -->
-      <!-- 百度字体平台:http://fontstore.baidu.com/static/editor/index.html -->
-      <!-- <i class="icon-statistics"></i>
-      <span class="post-meta-item-text"> 字数统计:</span>
-      <span class="post-count">744字</span> -->
-    </span>
-  </span>
-
-  <span class="post-time">
-    <!-- &nbsp; | &nbsp; -->
-    <!-- <span class="post-meta-item-icon">
-      <i class="icon-book icon"></i>
-      <span class="post-meta-item-text"> 阅读时长≈</span>
-      <span class="post-count">3分</span>
-    </span> -->
-  </span>
-</div>
-
-
-      
-    
-  
-    <h1 itemprop="name">
-	
-	  <a class="article-title" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/">博客搭建 Hexo &amp;&amp; Github</a>
-	
-    </h1>
-  
-
-
-  </header>
-  
-  <div class="article-entry" itemprop="articleBody">
-    
-    <p><a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">Hexo</a> 是一款基于 Node.js 的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在 GitHub 和 Coding 上，是搭建博客的首选框架。
-    
-    <a class="article-more-a" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/#more">more >></a>
-    
-    
-
-    
-
-    
-
-  <!-- </div>
-  <div class="article-info article-info-index">
-    
- 
-    
-    <p class="article-more-link">
-      <a class="article-more-a" href="/2024/05/22/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA-Hexo-Github/">展开全文 >></a>
-    </p>
-    
-
-    
-    <div class="clearfix"></div>
-  </div>
-  </div> -->
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        
-
-            <div class="jump-container" id="js-jump-container" style="display:none;">
-                <a href="javascript:void(0)"  class="mod-side-operation__jump-to-top" >
-                    <i id="goup" class="icon-font icon-back"></i>
-                </a>
-            </div>
-                <!-- <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                    <i class="icon-font icon-plane jump-plane"></i>
-                </div> -->
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-  
 
 
           </div>
@@ -986,8 +522,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
